@@ -4,12 +4,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import { addToCart } from "../Redux/slices/cartSlice";
 import { addToWishlist } from "../Redux/slices/wishlistSlice";
+import { toast } from "react-toastify";
 
 const PersonalProduct = () => {
   const { id } = useParams(); 
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const products = useSelector((state) => state.products.products);
+    const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
   
  
   const product = products.find((product) => product.id === parseInt(id));
@@ -18,13 +20,17 @@ const PersonalProduct = () => {
     return <div>Product not found!</div>;
   }
 
-  const handleAddToCart = () => {
-    dispatch(addToCart(product));  
-  };
+ const handleAdd = (type, product) => {
+     if (!isLoggedIn) {
+       toast.error("Please login to continue!");
+       return;
+     }
+     const action = type === 'cart' ? addToCart : addToWishlist;
+     dispatch(action(product));
+     toast.success(`${product.name} added to ${type}!`);
+   };
 
-  const handleAddToWishlist = () => {
-    dispatch(addToWishlist(product));  
-  };
+
 
   return (
     <div style={{ padding: "20px", textAlign: "center" }}>
@@ -35,7 +41,7 @@ const PersonalProduct = () => {
       
       <div>
         <Button 
-          onClick={handleAddToCart} 
+          onClick={handleAdd} 
           variant="contained" 
           color="primary" 
           style={{ marginRight: "10px" }}
@@ -44,7 +50,7 @@ const PersonalProduct = () => {
         </Button>
         
         <Button 
-          onClick={handleAddToWishlist} 
+          onClick={handleAdd} 
           variant="contained" 
           color="secondary"
         >
@@ -55,7 +61,7 @@ const PersonalProduct = () => {
    
       <div style={{ marginTop: "20px" }}>
         <Button 
-          onClick={() => navigate("/dashboard")} 
+          onClick={() => navigate("/")} 
           variant="outlined" 
           color="default"
         >

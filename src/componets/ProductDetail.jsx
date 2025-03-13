@@ -7,14 +7,14 @@ import { Button } from "@mui/material";
 const ProductDetail = ({ product }) => {
   const dispatch = useDispatch();
 
-  const handleAddToCart = () => {
-    dispatch(addToCart(product)); 
-  };
-
-  const handleAddToWishlist = () => {
-    dispatch(addToWishlist(product));  
-  };
-
+    const handleAddToCart = () => {
+      dispatch(addToCart(product));  
+    };
+  
+    const handleAddToWishlist = () => {
+      dispatch(addToWishlist(product));  
+    };
+                                    
   return (
     <div>
       <h2>{product.name}</h2>

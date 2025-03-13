@@ -1,68 +1,75 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom"; 
-import { addToCart } from "../Redux/slices/cartSlice";
-import { addToWishlist } from "../Redux/slices/wishlistSlice";
-import { Card, Button } from "antd";
-import { Box, Typography } from '@mui/material';
+import { useNavigate } from "react-router-dom";
+import { addToCart } from "../redux/slices/cartSlice";
+import { addToWishlist } from "../redux/slices/wishlistSlice";
+import { Card, CardMedia, CardContent, CardActions, Button, Grid, Typography } from "@mui/material";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
   const isLoggedIn = useSelector(state => state.auth.isLoggedIn);
-  const products = useSelector((state) => state.products.products);
+  const products = useSelector(state => state.products.products);
 
-  const handleAddToCart = (product) => {
-    if (isLoggedIn) {
-      dispatch(addToCart(product));
-    } else {
-      alert("Please log in to add to cart!");
+  const handleAdd = (type, product) => {
+    if (!isLoggedIn) {
+      toast.error("Please login to continue!");
+      return;
     }
+    const action = type === 'cart' ? addToCart : addToWishlist;
+    dispatch(action(product));
+    toast.success(`${product.name} added to ${type}!`);
   };
-
-  const handleAddToWishlist = (product) => {
-    if (isLoggedIn) {
-      dispatch(addToWishlist(product));
-    } else {
-      alert("Please log in to add to wishlist!");
-    }
-  };
-
-  const handleProductClick = (product) => {
-    navigate(`/product/${product.id}`);  
-  };
-
-  if (!products || products.length === 0) {
-    return <div>Loading products...</div>;
-  }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Product Dashboard</h1>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "20px" }}>
-        {products.map((product) => (
-          <Box key={product.id}>
-            <Card className="product-card" onClick={() => handleProductClick(product)}>
-              <div>
-                <img src={product.imageUrl} alt={product.name} />
-              </div>
-              <div className="product-details">
-                <h3 className="product_title">{product.name}</h3>
-                <p className="product_price">Price: ${product.price}</p>
-                <div className="product_actions">
-                  <Button type="primary" onClick={() => handleAddToWishlist(product)}>
-                    Add to Wishlist
-                  </Button>
-                  <Button type="default" onClick={() => handleAddToCart(product)}>
-                    Add to Cart
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </Box>
-        ))}
-      </div>
-    </div>
+    <Grid container spacing={3} p={4}>
+      {products.map((product) => (
+        <Grid item xs={12} sm={6} md={4} key={product.id}>
+          <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <CardMedia
+              component="img"
+              height="200"
+              image={product.imageUrl}
+              alt={product.name}
+              onClick={() => navigate(`/product/${product.id}`)}
+              style={{ cursor: 'pointer' }}
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h5">{product.name}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                {product.description}
+              </Typography>
+              <Typography variant="h6" mt={2}>${product.price}</Typography>
+            </CardContent>
+            <CardActions sx={{ mt: 'auto' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleAdd('cart', product)}
+                sx={{
+                  backgroundColor: "#1e3a8a",
+                  "&:hover": { backgroundColor: "#1d4ed8" },
+                }}
+              >
+                Add to Cart
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => handleAdd('wishlist', product)}
+                sx={{
+                  backgroundColor: "#db2777",
+                  "&:hover": { backgroundColor: "#ec4899" },
+                }}
+              >
+                Add to Wishlist
+              </Button>
+            </CardActions>
+          </Card>
+        </Grid>
+      ))}
+    </Grid>
   );
 };
 

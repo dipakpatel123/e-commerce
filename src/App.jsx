@@ -1,61 +1,44 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./componets/Login";
-import Dashboard from "./componets/Dashboard";
-import Wishlist from "./componets/Wishlist";
-import Cart from "./componets/Cart";
-import ProductDetail from "./componets/ProductDetail";
-import ProtectedRoute from "./utils/ProtectedRoute";
-import Navbar from "./componets/Navbar";
-import { useDispatch } from "react-redux";
-import { setLoginStatus } from "../src/Redux/slices/authSlice";
-import PersonalProduct from "./componets/PersonalProduct";
-import { addToCart } from "./Redux/slices/cartSlice";
-import { addToWishlist } from "./Redux/slices/wishlistSlice";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import Navbar from "../src/componets/Navbar"
+import Dashboard from "../src/componets/Dashboard"
+import ProtectedRoute from "../src/utils/ProtectedRoute";
+import Login from "./componets/Auth/Login"
+import Register from "../src/componets/Auth/Register"
+import Cart from "../src/componets/Cart";
+import Wishlist from "../src/componets/Wishlist";
+import PersonalProduct from "../src/componets/PersonalProduct"
+import Footer from "./componets/Footer";
+import Home from "./componets/Home";
 
 const App = () => {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const isLoggedIn = localStorage.getItem("isLoggedIn");
-    if (isLoggedIn) {
-      dispatch(setLoginStatus(true));
-    }
-    const cartFromStorage = JSON.parse(localStorage.getItem("cart"));
-    const wishlistFromStorage = JSON.parse(localStorage.getItem("wishlist"));
-    if (cartFromStorage) {
-      cartFromStorage.forEach(item => dispatch(addToCart(item)));
-    }
-    if (wishlistFromStorage) {
-      wishlistFromStorage.forEach(item => dispatch(addToWishlist(item)));
-    }
-  }, [dispatch]);
-
   return (
-    <Router>
+    <BrowserRouter>
       <Navbar />
+      <ToastContainer />
       <Routes>
-        <Route path="/login" element={<Login />} />
+      {/* <Route path="/" element={<Home />} /> */}
         <Route path="/" element={<Dashboard />} />
-        <Route
-          path="/wishlist"
-          element={
-            <ProtectedRoute>
-              <Wishlist />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/product/:id" element={<PersonalProduct />} />
+        
+        <Route path="/cart" element={
+          <ProtectedRoute>
+            <Cart />
+          </ProtectedRoute>
+        } />
+        
+        <Route path="/wishlist" element={
+          <ProtectedRoute>
+            <Wishlist />
+          </ProtectedRoute>
+        } />
       </Routes>
-    </Router>
+      <Footer/>
+    </BrowserRouter>
   );
 };
 

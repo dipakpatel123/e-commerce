@@ -20,7 +20,7 @@ const wishlistSlice = createSlice({
     },
     clearWishlist: (state) => {
       state.wishlist = [];
-      localStorage.removeItem("wishlist");
+      localStorage.removeItem("wishlist"); // Clear wishlist from localStorage
     },
   },
 });
